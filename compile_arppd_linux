@@ -1,0 +1,1 @@
+gcc -o builds/defender-linux src-linux/defender.c -lpcap -pthread
