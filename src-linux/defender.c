@@ -41,13 +41,12 @@ struct sigaction old_action;
 int install_arptables();
 
 void getGatewayIpLinux(char* gw_ip){
-  //route -n | grep 'UG[ \t]' | awk '{print $2}'
+  //route -n | grep 'UG[ \t]' | awk '{print $2}' - command to get GW IP
   char iper[128] = "";
   FILE *fp;
   char path[1035];
   int exists = 0;
 
-  /* Open the command for reading. */
   fp = popen("route -n | grep 'UG[ \t]' | awk '{print $2}'", "r");
   if (fp == NULL) {
     printf("Failed to run command\n" );
@@ -89,7 +88,6 @@ void sigint_handler(int sig_no){
   char j[1024] = "";
   snprintf(j, sizeof(j), "arp -d %s && arptables -P INPUT ACCEPT && arptables --flush && ip -s neighbour flush all && echo done", gateway_ip);
 
-  /* Open the command for reading. */
   fp = popen(j, "r");
   if (fp == NULL) {
     printf("Failed to run command\n" );
@@ -105,13 +103,8 @@ void sigint_handler(int sig_no){
 }
 
 int saveGatewayMacLinux(){
-	/**
- * /proc/net/arp looks like this:
- *
- * IP address       HW type     Flags       HW address            Mask     Device
- * 192.168.12.31    0x1         0x2         00:09:6b:00:02:03     *        eth0
- * 192.168.12.70    0x1         0x2         00:01:02:38:4c:85     *        eth0
- */
+
+//Scan through the ARP Table
 
 FILE *arpCache = fopen(L_ARP_CACHE, "r");
     if (!arpCache)
@@ -145,14 +138,19 @@ FILE *arpCache = fopen(L_ARP_CACHE, "r");
 
 
 int main(int argc, char ** argv){
+  //Save Gateway IP and MAC
   getGatewayIpLinux(gateway_ip);
   saveGatewayMacLinux();
+
+  //Allow all connections every 5 minutes and on exit
   pthread_t tid;
   pthread_create(&tid, NULL, &allowAllConnections, NULL);
   struct sigaction action;
     memset(&action, 0, sizeof(action));
     action.sa_handler = &sigint_handler;
     sigaction(SIGINT, &action, &old_action);
+
+  //Check for arptables installation
   install_arptables();
   printf("%sWARNING: %sBefore starting this script, make sure there are currently\nno ARP Poisoning attacks on this network!\n(Restart router to be sure)\nPress Enter to continue...\n", KRED, KWHT);
   char enter = 0;

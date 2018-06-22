@@ -27,7 +27,6 @@ void rearpGateway(char* gateway_mac, char* gateway_ip){
   int exists = 0;
   char command[1000];
   snprintf(command, sizeof(command), "arp -s %s %s", gateway_ip, gateway_mac);
-  /* Open the command for reading. */
   fp = popen(command, "r");
   if (fp == NULL) {
     printf("Failed to block packets\n" );
@@ -42,7 +41,6 @@ void blockARPPackets(char* mac_address){
   int exists = 0;
   char command[1000];
   snprintf(command, sizeof(command), "arptables -A INPUT --source-mac %s -j DROP", mac_address);
-  /* Open the command for reading. */
   fp = popen(command, "r");
   if (fp == NULL) {
     printf("Failed to block packets\n" );
@@ -61,9 +59,6 @@ void my_callback(u_char *args, const struct pcap_pkthdr* pkthdr, const u_char*
     char arp_source[128] = "";
     char arp_ip_source[128] = "";
 
-    // printf("Packet Count: %d\n", ++count);    /* Number of Packets */
-    // printf("Recieved Packet Size: %d\n", pkthdr->len);    /* Length of header */
-    // printf("Payload:\n");                     /* And now the data */
     for(i=0;i<pkthdr->len;i++) {
 
         if(i >= 6 && i<= 11){
@@ -74,8 +69,6 @@ void my_callback(u_char *args, const struct pcap_pkthdr* pkthdr, const u_char*
           if (i != 11)
           strcat(p_source, ":");
         }
-
-
 
         if(i >= 22 && i<= 27){
           //Daca el vrea sa si schimbe ip ul lui si exista deja in arp, blocheaza!
@@ -95,9 +88,6 @@ void my_callback(u_char *args, const struct pcap_pkthdr* pkthdr, const u_char*
           strcat(arp_ip_source, ".");
         }
     }
-    // printf("Extracted source: %s\n", p_source);
-    // printf("Extracted ARP source: %s\n", arp_source);
-    // printf("Extracted ARP IP Source: %s\n", arp_ip_source);
 
       char attacker_ip[128] = "";
             if(strncmp(arp_source, gtwy, 20) != 0){
@@ -109,12 +99,7 @@ void my_callback(u_char *args, const struct pcap_pkthdr* pkthdr, const u_char*
                 rearpGateway(gtwy, gateway_ip);
               }
             }
-
-
-
-
-
-    }
+          }
 
 
 int sniffARPPackets(char* gateway, char* gateway_ipp)
@@ -128,47 +113,40 @@ int sniffARPPackets(char* gateway, char* gateway_ipp)
     pcap_t* descr;
     const u_char *packet;
     struct pcap_pkthdr hdr;
-    struct ether_header *eptr;    /* net/ethernet.h */
-    struct bpf_program fp;        /* hold compiled program */
-    bpf_u_int32 maskp;            /* subnet mask */
-    bpf_u_int32 netp;             /* ip */
+    struct ether_header *eptr;
+    struct bpf_program fp;
+    bpf_u_int32 maskp;
+    bpf_u_int32 netp;
 
-    // if(argc != 2){
-    //     fprintf(stdout, "Usage: %s \"expression\"\n"
-    //         ,argv[0]);
-    //     return 0;
-    // }
-
-    /* Now get a device */
     dev = pcap_lookupdev(errbuf);
 
     if(dev == NULL) {
         fprintf(stderr, "%s\n", errbuf);
         exit(1);
     }
-        /* Get the network address and mask */
+
     pcap_lookupnet(dev, &netp, &maskp, errbuf);
 
-    /* open device for reading in promiscuous mode */
+
     descr = pcap_open_live(dev, BUFSIZ, 1,-1, errbuf);
     if(descr == NULL) {
         printf("pcap_open_live(): %s\n", errbuf);
         exit(1);
     }
 
-    /* Now we'll compile the filter expression*/
+
     if(pcap_compile(descr, &fp, "arp", 0, netp) == -1) {
         fprintf(stderr, "Error calling pcap_compile\n");
         exit(1);
     }
 
-    /* set the filter */
+
     if(pcap_setfilter(descr, &fp) == -1) {
         fprintf(stderr, "Error setting filter\n");
         exit(1);
     }
 
-    /* loop for callback function */
+
     pcap_loop(descr, -1, my_callback, NULL);
     return 0;
 }
