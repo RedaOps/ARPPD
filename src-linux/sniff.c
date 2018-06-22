@@ -120,8 +120,8 @@ void my_callback(u_char *args, const struct pcap_pkthdr* pkthdr, const u_char*
 int sniffARPPackets(char* gateway, char* gateway_ipp)
 {
 
-    strcpy(gtwy, gateway);
-    strcpy(gateway_ip, gateway_ipp);
+    strncpy(gtwy, gateway, 17);
+    strncpy(gateway_ip, gateway_ipp, 15);
     int i;
     char *dev;
     char errbuf[PCAP_ERRBUF_SIZE];

@@ -58,7 +58,7 @@ void getGatewayIpLinux(char* gw_ip){
     strcat(iper, path);
   }
 
-  strcpy(gw_ip, iper);
+  strncpy(gw_ip, iper, 15);
   strtok(gw_ip, "\n");
   printf("%sGATEWAY IP ADDRESS SAVED: %s%s%s\n", KWHT, KCYN, gw_ip, KWHT);
 
@@ -133,7 +133,7 @@ FILE *arpCache = fopen(L_ARP_CACHE, "r");
     while (3 == fscanf(arpCache, ARP_LINE_FORMAT, ipAddr, hwAddr, device))
     {
         if(strncmp(ipAddr, gateway_ip, 15) == 0){
-		        strcpy(gateway_mac, hwAddr);
+		        strncpy(gateway_mac, hwAddr, 17);
         }
     }
 
