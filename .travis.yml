@@ -2,7 +2,6 @@ language: c
 sudo: required
 script:
   - ./compile_arppd_linux
-  - ./builds/defender-linux
 addons:
   apt:
     packages:
