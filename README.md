@@ -11,9 +11,9 @@ The program saves the Gateway's MAC and IP Address when started. It then scans f
 For now, the script only works on linux. I will try to release a win64 version ASAP.
 
 ## Installation and build
-ARPPD needs arptables to run, so just install it:
+ARPPD needs arptables and libpcap-dev to run, so just install it:
 ```
-sudo apt-get install arptables
+sudo apt-get install arptables libpcap-dev
 ```
 
 There's a pre-built executable in the builds folder, or build it yourself:
