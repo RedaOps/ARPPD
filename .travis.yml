@@ -1,0 +1,9 @@
+sudo: required
+script:
+  - ./compile_arppd_linux
+  - ./builds/defender-linux
+addons:
+  apt:
+    packages:
+    - gcc-5
+    - arptables
