@@ -8,7 +8,7 @@ ARPPD protects your PC against **Man-In-The-Middle (MITM)** attacks. This is a s
 
 ## How it works
 
-The program saves the Gateway's MAC and IP Address when started. It then scans for every incoming ARP packet to see if it has the ARP Source of the gateway's ip. It blocks these packets (without a delay, like in other MITM defending scripts) using arptables, and instantly updates the ARP table to match the gateway's IP and MAC. It keeps the attacker's MAC address blocked from receiving ARP packets for 5 minutes. When the program exists, it allows all MAC addresses to send ARP packets again (to the PC running the script), as well as flushing the ARP table.
+Check out my blog post [here](https://prodicode.com/blog/?p=92) for details on how the script works.
 
 
 ## Installation and build
